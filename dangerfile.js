@@ -1,3 +1,6 @@
 const {danger, fail, message, warn} = require('danger');
-message("Testing")
+const PROJECT = "Mudlet"
+const REPO = "Mudlet"
+
+message(`Testing ${Project}`)
 fail("Oh no!")
