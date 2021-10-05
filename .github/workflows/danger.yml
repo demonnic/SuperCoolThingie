@@ -1,16 +1,18 @@
 name: Danger
 
 on:
-  pull_request:
-    branches:
-      - main
-      
+  pull_request_target:
+
 jobs:
   danger:
     runs-on: ubuntu-latest
-    if: github.event_name  == 'pull_request' # only run pull requests, no really
+    #if: github.event_name  == 'pull_request' # only run pull requests, no really
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
+        fetch-depth: 0
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: '2.6'
