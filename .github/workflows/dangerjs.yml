@@ -2,6 +2,7 @@ name: DangerJS
 
 on:
   pull_request_target:
+  push:
 
 jobs:
   danger:
@@ -13,8 +14,14 @@ jobs:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}
         fetch-depth: 0
-
-    - uses: danger/danger-js@9.1.8
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DANGER_DISABLE_TRANSPILATION: "true"
+    - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+    - name: Install yarn dependencies
+        run: |
+          yarn add danger --dev
+          yarn danger
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DANGER_DISABLE_TRANSPILATION: "true"
