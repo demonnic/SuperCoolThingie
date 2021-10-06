@@ -46,11 +46,11 @@ sourcefiles.forEach(function(filename, index, array) {
   })
 })
 
-if (sourcefiles.length > 1) {
+if (sourcefiles.length > 10) {
   warn(`PR makes changes to ${sourcefiles.length} source files. Double check the scope hasn't gotten out of hand`)
 }
 
 title_wordcount = pr_title.split(" ").length
-if (title_wordcount > 2) {
+if (title_wordcount > 25) {
   warn(`PR title is ${title_wordcount} words long, double check it will make a good changelog line`)
 }
