@@ -41,7 +41,7 @@ sourcefiles.forEach(function(filename, index, array) {
       }
     })
     if (issues.length > 0) {
-      message(`File \`${filename}\` adds issues: ${issues.map(iss => `[${iss}](${ISSUE_URL}/${iss})`).join(", ")}`)
+      message(`\`${filename}\` adds TODO issues: ${issues.map(iss => `[${iss}](${ISSUE_URL}/${iss})`).join(", ")}`)
     }
   })
 })
