@@ -3,7 +3,7 @@ const {danger, fail, message, warn} = require('danger');
 const util = require('util');
 const ISSUE_REGEX = /https?:\/\/(?:www\.)?github\.com\/Mudlet\/Mudlet\/issues\/(\d+)/i
 const ISSUE_URL = "https://github.com/Mudlet/Mudlet/issues/"
-const SOURCE_REGEX = /.*\.(cpp|c|h|lua|js)$/i
+const SOURCE_REGEX = /.*\.(cpp|c|h|lua)$/i
 const TITLE_REGEX = /^(fix|improve|add|infra)/i
 const touched_files = [...danger.git.created_files, ...danger.git.modified_files]
 const sourcefiles = touched_files.filter(item => item.match(SOURCE_REGEX))
@@ -27,19 +27,22 @@ if (pr_title.match(TITLE_REGEX)) {
 var added_todos = {}
 var bad_todos = []
 
-sourcefiles.forEach(function(item, index, array) {
-  let additions = danger.git.diffForFile(item)
+sourcefiles.forEach(function(filename, index, array) {
+  let additions = danger.git.diffForFile(filename)
   additions.then(diff => {
+    var issues = []
     diff.added.split("\n").forEach(function(item, index, array) {
-      if (item.includes("TODO")) {
-        message("There is a TODO")
+      if (item.includes("TODO:")) {
         let has_issue = item.match(ISSUE_REGEX)
-        if (has_issue) {
-          added_todos[filename] = (added_todos[filename] === undefined) ? [] : added_todos[filename]
-          added_todos[filename].push(item)
+        if (!has_issue) {
+          fail(`Source file ${filename} includes a Todo with no Mudlet issue link. New TODO items in source must have an accompanying github issue`)
+        } else {
+          issues.push(has_issue[1])
         }
       }
     })
+    if (issues.length > 0) {
+      message(`File \`${filename}\` adds issues: [${issues.join(", ")}]`)
+    }
   })
 })
-message(util.inspect(added_todos))
