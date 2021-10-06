@@ -33,7 +33,7 @@ sourcefiles.forEach(function(filename, index, array) {
     diff.added.split("\n").forEach(function(item, index, array) {
       if (item.includes("TODO:")) {
         let has_issue = item.match(ISSUE_REGEX)
-        if (has_issue.length == 0) {
+        if (has_issue.length < 1) {
           fail(`Source file ${filename} includes a Todo with no Mudlet issue link.\nNew TODO items in source files must have an accompanying github issue`)
         } else {
           issues.push(has_issue[1])
