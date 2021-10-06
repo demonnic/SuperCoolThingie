@@ -1,5 +1,4 @@
 const {danger, fail, message, warn} = require('danger');
-const util = require('util');
 const ISSUE_REGEX = /https?:\/\/(?:www\.)?github\.com\/Mudlet\/Mudlet\/issues\/(\d+)/i
 const ISSUE_URL = "https://github.com/Mudlet/Mudlet/issues"
 const SOURCE_REGEX = /.*\.(cpp|c|h|lua)$/i
@@ -14,23 +13,22 @@ if (pr_title.match(TITLE_REGEX)) {
   const type_to_readable = {
     add: "Addition",
     fix: "Fix",
-    improve: "Improvement"
+    improve: "Improvement",
+    infra: "Infrastructure"
   }
-  message(`PR type: \`${type_to_readable[title_type[0].toLowerCase()]}\``)
+  message(`PR type: \`${type_to_readable[title_type[0].toLowerCase()]}\``, {icon: ":heavy_check_mark:", line: 1})
 } else if(pr_title.match(/^\[?WIP\]?/i)) {
   fail("PR is still a WIP, do not merge")
 } else {
-  fail("PR title must start with `fix, `improve`, `add` or `infra` for release notes purposes.")
+  fail("PR title must start with `fix`, `improve`, `add` or `infra` for release notes purposes.")
 }
 
-var added_todos = {}
-var bad_todos = []
-
-sourcefiles.forEach(function(filename, index, array) {
+// checks sourcefile changes to ensure any new TODO items also have a Mudlet issue
+sourcefiles.forEach(function(filename) {
   let additions = danger.git.diffForFile(filename)
   additions.then(diff => {
     var issues = []
-    diff.added.split("\n").forEach(function(item, index, array) {
+    diff.added.split("\n").forEach(function(item) {
       if (item.includes("TODO:")) {
         let has_issue = item.match(ISSUE_REGEX)
         if (!has_issue) {
@@ -41,15 +39,17 @@ sourcefiles.forEach(function(filename, index, array) {
       }
     })
     if (issues.length > 0) {
-      message(`\`${filename}\` adds TODO issues: ${issues.map(iss => `[${iss}](${ISSUE_URL}/${iss})`).join(", ")}`)
+      message(`\`${filename}\` adds TODO issues: ${issues.map(iss => `[${iss}](${ISSUE_URL}/${iss})`).join(", ")}`,{icon: ":heavy_check_mark:"} )
     }
   })
 })
 
+// Warns if a PR touched more than 10 source files.
 if (sourcefiles.length > 10) {
   warn(`PR makes changes to ${sourcefiles.length} source files. Double check the scope hasn't gotten out of hand`)
 }
 
+// Warns if the title is perhaps a bit verbose
 title_wordcount = pr_title.split(" ").length
 if (title_wordcount > 25) {
   warn(`PR title is ${title_wordcount} words long, double check it will make a good changelog line`)
