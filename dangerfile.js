@@ -1,7 +1,7 @@
 const {danger, fail, message, warn} = require('danger');
 const util = require('util');
 const ISSUE_REGEX = /https?:\/\/(?:www\.)?github\.com\/Mudlet\/Mudlet\/issues\/(\d+)/i
-const ISSUE_URL = "https://github.com/Mudlet/Mudlet/issues/"
+const ISSUE_URL = "https://github.com/Mudlet/Mudlet/issues"
 const SOURCE_REGEX = /.*\.(cpp|c|h|lua)$/i
 const TITLE_REGEX = /^(fix|improve|add|infra)/i
 const touched_files = [...danger.git.created_files, ...danger.git.modified_files]
@@ -33,7 +33,7 @@ sourcefiles.forEach(function(filename, index, array) {
     diff.added.split("\n").forEach(function(item, index, array) {
       if (item.includes("TODO:")) {
         let has_issue = item.match(ISSUE_REGEX)
-        if (!has_issue) {
+        if (has_issue.length == 0) {
           fail(`Source file ${filename} includes a Todo with no Mudlet issue link.\nNew TODO items in source files must have an accompanying github issue`)
         } else {
           issues.push(has_issue[1])
@@ -41,7 +41,7 @@ sourcefiles.forEach(function(filename, index, array) {
       }
     })
     if (issues.length > 0) {
-      message(`File \`${filename}\` adds issues: [${issues.join(", ")}]`)
+      message(`File \`${filename}\` adds issues: ${issues.map(iss => `[${iss}](${ISSUE_URL}/${iss})`).join(", ")}`)
     }
   })
 })
