@@ -1,4 +1,3 @@
-// TODO: https://github.com/Mudlet/Mudlet/issues/5486
 const {danger, fail, message, warn} = require('danger');
 const util = require('util');
 const ISSUE_REGEX = /https?:\/\/(?:www\.)?github\.com\/Mudlet\/Mudlet\/issues\/(\d+)/i
@@ -35,7 +34,7 @@ sourcefiles.forEach(function(filename, index, array) {
       if (item.includes("TODO:")) {
         let has_issue = item.match(ISSUE_REGEX)
         if (!has_issue) {
-          fail(`Source file ${filename} includes a Todo with no Mudlet issue link. New TODO items in source must have an accompanying github issue`)
+          fail(`Source file ${filename} includes a Todo with no Mudlet issue link.\nNew TODO items in source files must have an accompanying github issue`)
         } else {
           issues.push(has_issue[1])
         }
